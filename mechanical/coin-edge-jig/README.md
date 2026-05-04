@@ -46,7 +46,8 @@ The Fusion360 file (`.f3d`) is fully parametric. You can adjust the following va
 
 ## Assembly & Usage
 
-1. **Print Settings & Orientation:** * **Orientation (Base):** Rotate the Base 180° in your slicer. It should be printed **face side down** (the flat plate on the bed) and the hollow stem at the top for ease of print and better surface accuracy.
+1. **Print Settings & Orientation:**
+   * **Orientation (Base):** Rotate the Base 180° in your slicer. It should be printed **face side down** (the flat plate on the bed) and the hollow stem at the top for ease of print and better surface accuracy.
    * **Nozzle:** 0.4mm
    * **Profile:** 0.20mm STRUCTURAL (modified)
    * **Walls:** 3
@@ -59,13 +60,15 @@ The Fusion360 file (`.f3d`) is fully parametric. You can adjust the following va
 
 ## Media
 
-<img src="./images/finished_jig.jpg" width="600" alt="Finished Product">
-<br>
 *Finished jig holding a 44mm brass coin.*
 
-<img src="./images/model_screenshot.png" width="600" alt="Fusion 360 Model">
-<br>
+<img src="./images/finished_jig.jpg" width="600" alt="Finished Product">
+
+
 *Parametric model overview in Fusion 360.*
 
+<img src="./images/model_screenshot.png" width="600" alt="Fusion 360 Model">
+
+
 ## License
-This project is licensed under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license. See the `LICENSE` file in the repository root for full details.
+This project is licensed under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license. See the [`LICENSE`](../../LICENSE) file in the repository root for full details.
