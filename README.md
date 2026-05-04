@@ -23,7 +23,9 @@ While various open-source alternatives exist, these workflows default to specifi
 
 ## Setup and Configuration
 
-This section focuses on technical calibration for consistent results across different lens focal lengths. Topics include achieving accurate hatch patterns and frequency settings for deep engravings or color marking on various substrates.
+This section focuses on the mechanical foundation of the laser. Before any engraving begins, the machine must be properly aligned and calibrated to ensure consistent results. Initial documentation covers squaring the tower to the bed, leveling the galvo head, and accurately finding the focal point for different lenses.
+
+* [**Laser Setup and Calibration Guide**](./setup_calibration.md) — Step-by-step procedures for mechanical alignment and lens calibration.
 
 ## Workflows
 
