@@ -2,6 +2,11 @@
 
 This project provides a two-part parametric clamping system designed for fiber laser edge engraving on non-ferrous coins. By using recessed neodymium magnets, the jig holds the coin securely between a base and a cap, leaving the entire 360° circumference of the coin edge exposed and unobstructed for the laser.
 
+## Project Files
+
+* [**Download Fusion 360 Model (.f3d)**](./rotary_engrave_coin_holder_parameterized.f3d)
+* [**Download Universal STEP File (.step)**](./rotary_engrave_coin_holder_parameterized.step)
+
 ## Design Logic
 
 The jig consists of two 3D-printed components:
@@ -53,10 +58,13 @@ The Fusion360 file (`.f3d`) is fully parametric. You can adjust the following va
 4. **Engraving:** Place the coin on the Base, then place the Cap on top. The magnetic force will center and clamp the coin. Because the jig is concentric with the stem, it allows for clean, continuous 360° edge engraving.
 
 ## Media
-![Finished Product](./images/finished_jig.jpg)
+
+<img src="./images/finished_jig.jpg" width="600" alt="Finished Product">
+<br>
 *Finished jig holding a 44mm brass coin.*
 
-![Fusion 360 Model](./images/model_screenshot.png)
+<img src="./images/model_screenshot.png" width="600" alt="Fusion 360 Model">
+<br>
 *Parametric model overview in Fusion 360.*
 
 ## License
