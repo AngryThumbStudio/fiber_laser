@@ -43,11 +43,9 @@ Avoid the center and extreme edges of the lens field. Precise placement is not c
 
 ### 1. Mark the reference circles
 
-Use **black anodized aluminum business cards** taped to the bed. The contrast between removed anodization and exposed aluminum makes alignment easier to judge visually than the red light alone.
+Tape **black anodized aluminum business cards** to the bed. Each circle is marked once with the fiber laser. That pass removes the black anodization and leaves a fine aluminum outline showing exactly where the beam fired. You need those outlines to judge alignment: the red light preview alone does not tell you how closely it tracks the laser path.
 
-Set focus height (or Z offset) for the thickness of the business cards, not the bare bed.
-
-Low-power vector marking is enough to leave a fine aluminum outline. Pen values below were used on the YDFLP-100-M7-M-R; adjust for your laser source as needed.
+Set focus height (or Z offset) for the thickness of the business cards, not the bare bed. Pen values below were used on the YDFLP-100-M7-M-R; adjust for your laser source as needed. The goal is clean anodization removal without heavy engraving.
 
 | Parameter | Value |
 | :--- | :--- |
@@ -67,8 +65,8 @@ Low-power vector marking is enough to leave a fine aluminum outline. Pen values 
 
 1. Make small changes to one parameter at a time: `Size ScaleX`, `Size ScaleY`, `Offset Pos X`, or `Offset Pos Y`.
 2. Tune one plane satisfactorily before moving to the other (for example, finish X scale/offset before Y scale/offset).
-3. After each change, compare the red light preview to the lasered outlines on both cards.
+3. After each change, compare the red light preview to the aluminum outlines on both cards (the areas where the laser removed the black anodization).
 
 Any adjustment affects the entire preview field, so check both circles every time.
 
-Stop when the red light preview looks reasonably aligned with the marked outlines. There is no fixed numeric tolerance.
+Stop when the red light preview looks reasonably aligned with those outlines. There is no fixed numeric tolerance.
