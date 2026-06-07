@@ -2,6 +2,10 @@
 
 ComfyUI workflow for converting black-and-white raster artwork into SVG paths suitable for fiber laser layout and engraving prep.
 
+Installing, deploying, and configuring ComfyUI itself is beyond the scope of this document. It assumes you already have a working ComfyUI setup and can install custom node packs from the repositories listed below (or through an integrated extension manager).
+
+Later steps reference **Adobe Illustrator** and **EZCAD3** because that is the workflow used on this platform. You do not need those specific applications to use the SVG output. Other vector editors and laser marking software, including LightBurn and EZCAD2, work fine as well.
+
 ## Workflow File
 
 * [**Download workflow JSON**](./comfyui_black_and_white_raster_to_svg_conversion_workflow.json)
@@ -76,12 +80,12 @@ Adjust **filename_prefix** and **Load Image** for each job. Tune Potrace setting
 
 ## Usage
 
-1. Install the required node packs and the `4x-UltraSharp.pth` upscale model.
+1. Install the required node packs (or use an integrated extension manager) and the `4x-UltraSharp.pth` upscale model.
 2. Load the workflow JSON in ComfyUI.
 3. Select your source raster in **Load Image** (black-and-white or high-contrast artwork works best).
 4. Set **Save SVG String** `filename_prefix` if desired.
 5. Queue the workflow and collect the SVG from the ComfyUI output folder.
-6. Continue layout and cleanup in Adobe Illustrator before export to EZCAD3.
+6. Continue layout and cleanup in Adobe Illustrator or other vector editing software, then export for your laser marking software (EZCAD3 in this workflow).
 
 ## Output
 
@@ -92,4 +96,4 @@ Each saved SVG contains **two layers**:
 1. **Art layer:** The traced vector paths from the input artwork.
 2. **Background fill layer:** A solid rectangle filled with the configured **background_color** (default `#FFFFFF`).
 
-When importing into Illustrator or EZCAD3, hide or remove the background layer if you only need the cut/engrave paths.
+When importing into vector editing software or laser marking software, hide or remove the background layer if you only need the cut/engrave paths.
