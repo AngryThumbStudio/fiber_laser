@@ -33,6 +33,12 @@ A bubble level is insufficient for fiber laser precision. Use a digital angle ga
 
 - **Shim Alternative:** If set screws are not being used, the galvo arm can be shimmed with thin metal shims. If actual shims are not available, a common practice is to use thin aluminum business cards, such as the same type commonly used during the ramp card focus process.
 
+### 1.5 Red Light Preview Calibration
+
+After focus has been dialed in for the lens in use, align the red light preview to the fiber laser path. This is normally a **one-time step at initial laser setup**, not a per-lens procedure.
+
+See the [Red Light Preview Calibration Procedure](red_light_preview_calibration.md).
+
 ---
 
 ## Part 2: Per-Lens Setup & Calibration
@@ -46,15 +52,10 @@ Focus must be pinpointed for each lens to ensure maximum energy density at the m
 3. **EZCAD3 Box Tests:** Use scrap steel for this phase. Since the EZCAD3 board allows for software-level Z-index adjustments per layer, run iterative box tests to find the final, optimized focus position.
    - *[Placeholder: Standalone Box Test parameters and procedure]*
 
-### 2.2 Red Light Preview Calibration
-Align the visible red light path with the actual (invisible) fiber laser path.
-- *[Placeholder: Red light preview calibration steps]*
-
-### 2.3 Software Lens Correction (.COR)
+### 2.2 Software Lens Correction (.COR)
 For EZCAD3, use the standalone calibration tool to account for pincushion or barrel distortion.
 - **Standard Precision:** Run a 9-point (3x3) grid.
 - **High Precision:** Run a 25-point (5x5) grid for larger field lenses or complex engravings.
-- **Manual Method:** - *[Placeholder: Manual calibration process via red light preview]*
 
 ---
 
