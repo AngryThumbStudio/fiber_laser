@@ -18,19 +18,25 @@ All materials and process descriptions are specific to the following hardware an
 While various open-source alternatives exist, these workflows default to specific commercial and node-based applications.
 
 * **Design & Vector:** Adobe Illustrator and Adobe Photoshop
-* **Modeling & Slicing:** Fusion360 and PrusaSlicer
+* **Modeling & Slicing:** OpenSCAD, Fusion360, and PrusaSlicer
 * **Generative & Automation:** ComfyUI and EZCAD3
 
 ## Setup and Configuration
 
 This section focuses on the mechanical foundation of the laser. Before any engraving begins, the machine must be properly aligned and calibrated to ensure consistent results. Initial documentation covers squaring the tower to the bed, leveling the galvo head, and accurately finding the focal point for different lenses.
 
-* [**Laser Setup and Calibration Guide**](./setup_calibration.md) — Step-by-step procedures for mechanical alignment and lens calibration.
+* [**Laser Setup and Calibration Guide**](./setup_calibration.md): Step-by-step procedures for mechanical alignment and lens calibration.
 
 ## Workflows
 
 The repository outlines several core processes:
 
-1.  **Raster to Vector Conversion:** Utilizing ComfyUI nodes to automate the transformation of raster images into optimized SVGs for cleaner engraving results.
+1.  **Raster to Vector Conversion:** ComfyUI workflow to upscale, threshold, and trace black-and-white raster art into SVG. See [**Black and White Raster to SVG**](./workflows/raster-to-svg/README.md).
 2.  **Layout and Export:** Using Adobe Illustrator for final layout and preparing files for EZCAD3. To ensure compatibility, all files are exported as Legacy Adobe Illustrator v8 format.
-3.  **Physical Workholding:** Designing and printing 3D printed jigs to ensure repeatable positioning and focal consistency during production runs.
+3.  **Physical Workholding:** Designing and printing 3D printed jigs to ensure repeatable positioning and focal consistency during production runs. See [**Mechanical Files**](./mechanical/README.md) for parametric models and focus calibration hardware.
+
+## Reference Settings
+
+Documented EZCAD3 pen and hatch parameters for coin engraving on non-ferrous metals:
+
+* [**Known Engraving Settings (Copper & Brass)**](./engraving_settings.md): Reference speeds, pulse parameters, and hatch configurations for the YDFLP-100-M7-M-R with an F160Q / 110 mm lens.
