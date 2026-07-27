@@ -37,6 +37,7 @@ The repository outlines several core processes:
 
 ## Reference Settings
 
-Documented EZCAD3 pen and hatch parameters for coin engraving on non-ferrous metals:
+Documented EZCAD3 pen and hatch parameters for coin engraving on non-ferrous metals, plus validated high carbon steel cutting:
 
 * [**Known Engraving Settings (Copper & Brass)**](./engraving_settings.md): Reference speeds, pulse parameters, and hatch configurations for the YDFLP-100-M7-M-R with an F160Q / 110 mm lens.
+* [**Cutting High Carbon Steel (3.0–4.5 mm)**](./cutting_high_carbon_steel.md): Validated focus schedule, kerf geometry, and process notes for through-cutting on the YDFLP-100-M7-M-R with a 110 mm lens.

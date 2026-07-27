@@ -211,6 +211,8 @@ Uses the [shared clean pen settings](#shared-pen-settings).
 
 These settings are typically used on **4 mm+** thick **1095** and **80CrV2** stock. The notes below reflect this machine and material only.
 
+For through-cutting 3.0–4.5 mm high carbon steel on this machine, see [Cutting High Carbon Steel](./cutting_high_carbon_steel.md).
+
 ### Phase 1: Depth (Engrave + Clean Hatch Set)
 
 | Parameter | Value |
