@@ -131,6 +131,14 @@ Here, **A, B, and C** represent distinguishable marking appearances, not prescri
 
 For a meaningful result, look for both **matching pairs** and an observable progression across the five boxes. Five indistinguishable marks are not, by themselves, evidence of accurate focus.
 
+### Reference Photo: Balanced vs. Unbalanced Focus
+
+<img src="./images/setup-calibration/box_focus_test_comparison.png" width="700" alt="Photograph of five-box focus tests on steel, with the top row labeled Good Focus and two lower rows labeled Too High">
+
+The photograph shows several five-box tests performed on steel. The **top row, labeled Good Focus**, illustrates the more balanced left-to-right marking response being sought. The two rows labeled **Too High** show noticeably unbalanced results, indicating that the nominal focus position was not centered for those trials.
+
+Use this photograph as a **visual comparison**, not as a prescribed darkness pattern. The exact shade of each box depends on the steel, laser settings, and lighting. What matters is whether **Squares 1 and 5** and **Squares 2 and 4** respond similarly, with a discernible progression about Square 3. An uneven pattern can also result from poor galvo alignment or an uneven workpiece, so verify those conditions before treating asymmetry as a focus-height issue.
+
 **If the test remains consistently unbalanced from left to right, recheck the mechanical leveling before making further focus adjustments.** A lens that is not square to the workpiece can create an apparent focus gradient across the row that a material-offset adjustment cannot reliably correct.
 
 ### Refining the increment
