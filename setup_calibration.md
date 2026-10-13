@@ -47,10 +47,10 @@ The following steps must be completed for every lens in your collection. These s
 ### 2.1 Establishing Focal Height
 Focus must be pinpointed for each lens to ensure maximum energy density at the material surface.
 1. **Rough Focus:** Adjust the Z-height until the red light preview dot is at its smallest visible size.
-2. **Ramp Card Method:** Use black anodized aluminum business cards for this test.
+2. **Ramp Card Method:** Use black anodized aluminum business cards to establish the approximate focal position.
    - See the [Ramp Card Focus Calibration Procedure](ramp_card_method.md).
-3. **EZCAD3 Box Tests:** Use scrap steel for this phase. Since the EZCAD3 board allows for software-level Z-index adjustments per layer, run iterative box tests to find the final, optimized focus position.
-   - *[Placeholder: Standalone Box Test parameters and procedure]*
+3. **EZCAD3 Five-Box Focus Test:** Use scrap steel to fine-tune the focal position established by the ramp card method. EZCAD3 supports independent Z-index offsets for individual marking layers, allowing five squares to be marked at progressively different focal heights. Evaluate the symmetry of the resulting marks and adjust the temporary material offset until the nominal focal position is centered. Repeat with progressively smaller Z-index increments to refine the result. Once calibrated, account for the test material thickness and update the stored base focus position.
+   - See the [EZCAD3 Five-Box Focus Calibration Procedure](box_focus_method.md).
 
 ### 2.2 Software Lens Correction (.COR)
 For EZCAD3, use the standalone calibration tool to account for pincushion or barrel distortion.
