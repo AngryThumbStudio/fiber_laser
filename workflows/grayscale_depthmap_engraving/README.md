@@ -1,19 +1,30 @@
 # Engraving a Grayscale Depthmap in EZCAD3
 
-This guide documents **my own workflow** for converting a grayscale depthmap into a sliced 3D engraving in EZCAD3. It reflects what I have tested and observed on my equipment. **It is not an authoritative or comprehensive guide to EZCAD3.** Other methods may work just as well, and some software behaviors described here may differ by version.
+This guide documents my own workflow for preparing an existing grayscale depthmap, converting it into a 3D surface in EZCAD3, and slicing it for engraving. It is based on observations and tests using my equipment. It is not an authoritative or comprehensive guide to EZCAD3. Other methods may work, and behavior may vary by software version.
 
-The goal is to explain the steps needed to prepare an existing depthmap, convert it into a 3D surface, and slice that surface for engraving.
+## Understanding Image Resolution in EZCAD3
 
-**Who this is for:** Fiber laser users who are already comfortable with basic EZCAD3 operations and have some experience importing and slicing STL models for 2.5D engraving.
+To generate a 3D model with predictable mesh complexity, match the exported image's embedded DPI to the DPI entered in EZCAD3. With those values matched, the image's pixel dimensions determine how many vertices and faces EZCAD3 generates. Size X/Y controls the physical dimensions of the model, not its mesh complexity, based on my testing.
 
-**What this guide does not cover:** Creating a depthmap from scratch, choosing laser pen parameters, configuring individual hatch settings, or calibrating the laser's material-removal rate.
+There are two practical rules:
+
+1. **Match the DPI.** If the image contains 72 DPI metadata, use 72 DPI in EZCAD3. If it contains 300 DPI, use 300 DPI. There is no particular DPI value required for this workflow.
+2. **Use pixel dimensions to control mesh complexity.** With matching DPI, a 1000 × 1000 pixel image generates fewer vertices and faces than a 2000 × 2000 pixel image. When DPI values do not match, EZCAD3 appears to resample the image, potentially producing an unexpectedly large or small mesh.
+
+In one test, two PNG files with identical 1000 × 1000 pixel data were imported at 635 DPI and 40 × 40 mm. The file with embedded 635 DPI produced approximately 2 million faces; the file with embedded 72 DPI produced 155.7 million. The [optional appendix](#technical-appendix-optional-reading) documents the controlled tests and inferred relationships.
+
+The practical approach is to choose the image's pixel dimensions deliberately, verify its embedded DPI after export, and enter the same DPI in EZCAD3. Set Size X/Y separately to establish the model's physical dimensions.
+
+**Who this is for**: Fiber laser users already familiar with basic image editing, image resolution metadata, EZCAD3 operation, and slicing STL models for 2.5D engraving.
+
+**Not covered**: Creating a depthmap from scratch, selecting pen and hatch parameters, or calibrating material-removal rates.
 
 The procedure has two parts:
 
-1. [Prepare an existing depthmap for EZCAD3](#part-1-prepare-the-depthmap)
+1. [Prepare an existing depthmap](#part-1-prepare-the-depthmap)
 2. [Convert and slice the depthmap in EZCAD3](#part-2-convert-and-slice-the-depthmap-in-ezcad3)
 
-**Optional reading:** The [Technical Appendix](#technical-appendix-optional-reading) explains the reasoning and testing behind the resolution and slicing choices. **You do not need to read the appendix to follow the procedure.**
+The [Technical Appendix](#technical-appendix-optional-reading) records the tests and explains the underlying reasoning. It is optional. You do not need to read it to complete the workflow.
 
 ---
 
@@ -21,300 +32,279 @@ The procedure has two parts:
 
 ### 1. Finish and save the working artwork
 
-Start with a completed grayscale depthmap from whatever source you prefer. Adjust its grayscale levels, proportions, and positioning until it represents the relief you want to engrave.
+Begin with an existing depthmap from whatever source you prefer. Finish adjusting its grayscale levels, proportions, and positioning to achieve the relief you want.
 
-**Save your finished working file before preparing an EZCAD3 export.** Your working artwork and your final export do not have to be the same resolution.
+Save the completed working file before preparing the EZCAD3 export. The working artwork does not need to have the same pixel dimensions as the file imported into EZCAD3. For example, I worked on one design at 1208 × 1208 pixels and exported a smaller copy. Working at a higher resolution is not required; it is simply how I developed that artwork.
 
-For example, I edited my working depthmap at **1208 × 1208 pixels**, then exported a smaller copy for EZCAD3. Working at a higher resolution is not required; it was simply the starting point for my artwork.
+### 2. Choose the export's pixel dimensions
 
-### 2. Choose the intended size and export resolution
+Choose how much XY detail you want the generated mesh to contain. This depends on your artwork and intended engraving size, not on a required DPI value.
 
-Decide how large the engraving will be and what DPI you intend to use in EZCAD3. Use those two values to calculate your target bitmap dimensions:
-
-```text
-Pixels per axis = (physical size in mm / 25.4) × DPI
-```
-
-For my example, I am preparing a **31.75 mm (1.25 inch)** square bitmap for a coin design. I commonly use a **0.04 mm hatch line spacing**, equivalent to 25 hatch lines per millimeter, or **635 lines per inch**. I use **635 DPI** as a practical *starting point* for the EZCAD3 model's XY sampling resolution.
+One useful way to estimate an appropriate image width is:
 
 ```text
-31.75 mm / 25.4 × 635 DPI = 793.75 pixels
-Round to 794 pixels
+Pixels along an axis ≈ Physical size along that axis (mm) / Desired XY sample spacing (mm)
 ```
 
-That produces a target export of **794 × 794 pixels**.
+For example, a 31.75 mm square engraving with an intended sampling interval of about 0.04 mm calls for:
 
-> **Why not just use the highest possible resolution?** More input pixels do not automatically produce a better engraving. The correct sampling density depends on the artwork and the laser process. My 635 DPI choice is a practical starting point, **not** a verified optical resolution limit or an EZCAD3 requirement. See the [appendix](#a-bitmap-resolution-hatch-spacing-and-mesh-complexity) for the test results.
+```text
+31.75 / 0.04 = 793.75  →  approximately 794 pixels per axis
+```
 
-### 3. Resize a copy and export it
+I often use 0.04 mm hatch line spacing, so this is a practical starting point for my work. Hatch spacing is not a mandatory bitmap resolution; finer or coarser image sampling may be appropriate for different artwork. More pixels create more mesh geometry, but do not automatically produce a better engraving.
 
-Use the image editor of your choice to:
+### 3. Resize and export a separate bitmap
 
-1. Resize a **copy** of the finished depthmap to the target pixel dimensions, using your preferred resampling method.
-2. Check that the proportions, grayscale transitions, and important relief details still look correct.
-3. Export the image as **TIFF, PNG, or BMP**, all of which are supported by EZCAD3.
+Using your preferred image editor:
 
-I prefer to perform the resizing in my image editor because it offers choices for resampling. EZCAD3 does not expose comparable resampling controls in its **Bitmap to curved surface** dialog.
+1. Resize a copy of the finished depthmap to the desired pixel dimensions, using your preferred resampling method.
+2. Verify the proportions and grayscale transitions after resizing.
+3. Export as TIFF, PNG, or BMP, preserving the intended grayscale information.
+4. Check the exported file's embedded DPI metadata. Do not assume that the editor's working-document DPI, or a DPI value in the filename, survived the export unchanged.
 
-The finished bitmap is now ready for EZCAD3. **Keep the original working artwork separately** in case you need to create a different export later.
+The embedded DPI can be 72, 300, 635, or another value. Use that same value when importing into EZCAD3.
+
+I prefer resizing in an image editor because it offers explicit resampling controls that EZCAD3 does not expose in this dialog. Keep the original working artwork so you can produce other exports later.
 
 ---
 
 ## Part 2: Convert and Slice the Depthmap in EZCAD3
 
-The screenshots below were captured from my EZCAD3 installation. The **31.75 mm / 635 DPI / 0.5 mm** values are an example, not required settings for other artwork.
+The screenshots show a 31.75 × 31.75 mm model imported at 635 DPI with a height of 0.5 mm. These are example settings, not requirements.
 
 ### 4. Switch to 3D View
 
-Switch from the normal EZCAD3 workspace to **3D View** using either method:
+Switch from the normal EZCAD3 workspace into 3D View:
 
-- Press **Ctrl + W**.
-- Click the **3D View** toolbar button, represented by a globe with a red and blue **3D** symbol. Hovering over the button displays its name.
+- Press Ctrl + W, or
+- Click the 3D View button on the main toolbar (the globe with the red and blue 3D symbol).
 
-<img src="./images/01_switch_to_3d_view.png" width="800" alt="EZCAD3 main toolbar with the 3D View button, shown as a globe with a red and blue 3D symbol.">
+<img src="./images/01_switch_to_3d_view.png" width="800" alt="EZCAD3 main toolbar showing the globe-shaped 3D View button with red and blue 3D lettering.">
 
-*Figure 1. The 3D View button in EZCAD3's main toolbar.*
+*Figure 1. Switch to EZCAD3's 3D View.*
 
 ### 5. Open Bitmap to curved surface
 
-In 3D View, click the **Bitmap to curved surface** button on the 3D toolbar. Hovering over the button displays its name.
+In 3D View, click Bitmap to curved surface on the 3D toolbar. Its name appears when you hover over the button.
 
-<img src="./images/02_bitmap_to_curved_surface.png" width="540" alt="EZCAD3 3D toolbar showing the Bitmap to curved surface button and its visible tooltip.">
+<img src="./images/02_bitmap_to_curved_surface.png" width="540" alt="EZCAD3 3D toolbar with the Bitmap to curved surface button highlighted and its tooltip visible.">
 
-*Figure 2. The Bitmap to curved surface command.*
+*Figure 2. Open Bitmap to curved surface.*
 
-### 6. Load the bitmap and configure the 3D model
+### 6. Load the bitmap and set the model dimensions
 
-The **Bitmap to curved surface** dialog opens. Click **Bitmap** and select the image you exported in Part 1.
+The Bitmap to curved surface dialog opens. Click Bitmap and select the exported image from Part 1.
 
-<img src="./images/03_bitmap_to_curved_surface_dialog.png" width="760" alt="EZCAD3 Bitmap to curved surface dialog before an image is loaded, showing Bitmap, Invert, DPI X and Y, Size X and Y, Height, Border, Refresh, and OK controls.">
+<img src="./images/03_bitmap_to_curved_surface_dialog.png" width="760" alt="EZCAD3 Bitmap to curved surface dialog before loading an image, with the Bitmap, Invert, DPI, Size, Height, Border, and Refresh controls visible.">
 
-*Figure 3. The Bitmap to curved surface dialog before loading an image.*
+*Figure 3. Bitmap to curved surface dialog before loading an image.*
 
-Set the controls for your artwork. My example uses:
+Configure the fields for your artwork:
 
-| Setting | Example value | What it does in this workflow |
+| Control | Example | What to do |
 | --- | --- | --- |
-| **Bitmap** | Exported grayscale depthmap | Selects the source image. |
-| **Invert** | **Checked** | Interprets white as the **highest** surface and black as the **lowest**. Without Invert, I have observed the opposite interpretation. |
-| **DPI X / DPI Y** | **635 / 635** | Sets the sampling density used when EZCAD3 generates the 3D surface. |
-| **Size X / Size Y** | **31.75 / 31.75 mm** | Sets the intended X/Y dimensions of the generated model. |
-| **Height** | **0.5 mm** | Sets the intended Z height of the generated model. |
-| **Border** | **0** | Left at zero; I have not investigated this control. |
+| Bitmap | Exported depthmap | Select the image to convert. |
+| DPI X / DPI Y | 635 / 635 | Enter the DPI embedded in the exported file. |
+| Size X / Size Y | 31.75 / 31.75 mm | Set the intended physical dimensions of the 3D model. These values do not independently determine mesh complexity in my tests. |
+| Height | 0.5 mm | Set the model's Z height. |
+| Invert | Checked | Use when the depthmap treats white as the highest elevation and black as the lowest. Without Invert, I have observed EZCAD3 interpret these in the opposite direction. |
+| Border | 0 | Leave at zero for this workflow; I have not tested its behavior. |
 
-**Important:** After selecting the image and setting the values, click **Refresh**. In my experience, clicking **OK** without first clicking Refresh does **not** create the 3D object.
+Check DPI X/Y against the exported file's embedded metadata before generating the surface.
+
+Click Refresh to generate the 3D surface. In my experience, clicking OK without first using Refresh does not create the object.
 
 ### 7. Inspect the generated surface
 
-After clicking **Refresh**, inspect the preview. The default view is **wireframe mode**, viewed from **above**. From this angle, the model can appear nearly flat, even when the relief has been generated.
+After clicking Refresh, the default preview is a top-down wireframe view. From above, a relief may look like a nearly flat gray square.
 
-<img src="./images/04_default_top_wireframe_preview.png" width="760" alt="EZCAD3 Bitmap to curved surface preview in the default wireframe top view, where the generated relief looks like a nearly uniform gray square.">
+<img src="./images/04_default_top_wireframe_preview.png" width="760" alt="Top-down wireframe preview in EZCAD3's Bitmap to curved surface dialog, where the model looks like a nearly uniform gray square.">
 
-*Figure 4. Default wireframe top view. The model's relief is difficult to evaluate.*
+*Figure 4. Default top-down wireframe preview; the relief is difficult to judge.*
 
-For a clearer preview, click:
+To see the relief more clearly, select:
 
-1. **Display render mode:** The **solid globe**, second button from the left in the dialog's preview toolbar.
-2. **Isometric view:** The **far-right** view button in that toolbar.
+1. Display render mode: The solid globe, second icon from the left in the dialog's toolbar.
+2. Isometric view: The far-right view icon.
 
-In this dialog, the **currently selected view or display button appears gray**; inactive choices appear blue. These preview buttons do not show the same helpful tooltips found in the main 3D workspace.
+In this dialog, gray means the view button is selected; blue means it is not selected. The dialog does not display the helpful tooltips available in the main 3D workspace.
 
-<img src="./images/05_rendered_isometric_preview.png" width="760" alt="EZCAD3 Bitmap to curved surface dialog showing the mountain man coin depthmap as a visible shaded 3D relief in isometric render mode, with Invert checked, 635 DPI, 31.75 mm X and Y, and 0.5 mm height.">
+<img src="./images/05_rendered_isometric_preview.png" width="760" alt="EZCAD3 isometric rendered preview of the mountain man depthmap showing its raised and recessed details, with Invert enabled and model settings visible.">
 
-*Figure 5. The same depthmap in rendered isometric view, making the relief easier to inspect.*
+*Figure 5. Rendered isometric view makes the model's relief visible.*
 
-These are viewing controls, not additional steps in generating the geometry. When the model looks correct, click **OK** to return to the main EZCAD3 3D workspace.
+These controls change only the preview. Once the model looks correct, click OK to return to the main 3D workspace.
 
-**From this point forward, the workflow is the same as working with an imported STL model.**
+From this point forward, the process is the same as slicing an imported STL model.
 
 ### 8. Open the slicing dialog
 
-In the main 3D workspace, click **Surface delamination** on the toolbar. Its tooltip reads *Slice the surface in a layered way*.
+Click Surface delamination in the main 3D toolbar. Its tooltip describes the function as *Slice the surface in a layered way*.
 
-<img src="./images/06_surface_delamination.png" width="365" alt="EZCAD3 main 3D toolbar showing the Surface delamination icon with its tooltip reading Slice the surface in a layered way.">
+<img src="./images/06_surface_delamination.png" width="365" alt="EZCAD3 Surface delamination toolbar button with the tooltip Slice the surface in a layered way.">
 
-*Figure 6. Surface delamination opens the slicing controls.*
-
-This opens the **Stratified section** dialog.
+*Figure 6. Surface delamination opens the slicing dialog.*
 
 ### 9. Choose the Z range and slice thickness
 
-<img src="./images/07_stratified_section_dialog.png" width="395" alt="EZCAD3 Stratified section dialog showing the full Z range of a 0.5 mm model configured for 256 slicing layers.">
+The Stratified section dialog controls the range and spacing of the slices.
 
-*Figure 7. The 0.5 mm model configured to produce 256 layers.*
+<img src="./images/07_stratified_section_dialog.png" width="395" alt="EZCAD3 Stratified section dialog with Min Z 0 mm, Max Z 0.5 mm, Thickness 0.00196 mm, and Layer 256.">
 
-The settings I use are:
+*Figure 7. Example of a 0.5 mm model divided into 256 layers.*
 
-- **Using selected two-dimensional object hierarchy:** Leave unchecked for this workflow.
-- **Z values range from large to small:** Leave checked for this workflow.
-- **Min Z / Max Z:** Use the full Z range of the model. Each **← Z** button copies the model boundary value shown to its right into the field. For the example model, that is **0** to **0.5 mm**.
-- **Thickness:** Enter the desired slicing interval in millimeters. EZCAD3 displays the resulting **Layer** count.
-- **Rotate angle:** Not adjusted in this workflow.
+For this workflow:
 
-**Choose Thickness based on your known material removal per layer.** The usual approach is to calibrate the laser's pen and hatch settings, measure how much material the complete engraving operation removes per layer, and use that result to guide slice thickness. The slice thickness itself does **not** control how much material the laser removes.
+- Leave Using selected two-dimensional object hierarchy unchecked.
+- Leave Z values range from large to small checked.
+- Set Min Z / Max Z to cover the model's intended Z range. Each ← Z button copies the actual model boundary shown to its right into the corresponding field.
+- Enter Thickness. EZCAD3 displays the resulting Layer count.
+- Leave Rotate angle unchanged.
 
-For illustration, dividing a **0.5 mm** model using a thickness of approximately **0.00196 mm** produces **256 layers** in EZCAD3. This is the example shown in Figure 7, not a required layer count.
+Normally, calibrated material removal determines the slice thickness. Choose Thickness based on how much material the complete pen-and-hatch operation removes per layer. Slice thickness defines the model's vertical intervals; it does not control the actual depth removed by the laser.
 
-An 8-bit depthmap can contain **256 grayscale values**. If the artwork uses those levels, slicing into substantially fewer than 256 layers may lose some vertical detail; using more than 256 layers may create redundant or nearly identical slices without adding information to the source image. This is a **consideration**, not a rule to override your measured removal rate. The [optional appendix](#c-grayscale-levels-slice-count-and-actual-engraving-depth) explains the limitations of this comparison.
+The 0.00196 mm thickness in Figure 7 yields 256 layers for this example's 0.5 mm model. It is an illustration, not a recommended setting or required layer count. The [optional appendix](#d-grayscale-values-slice-count-and-material-removal) discusses how slice count may affect grayscale relief fidelity.
 
-Click **OK** to generate the sliced object.
+Click OK to generate the slices.
 
-### 10. Review the resulting Slicing tangent object
+### 10. Review the Slicing tangent object
 
-EZCAD3 creates a new entry in the **Object list**, with type **Slicing tangent**. Select it to review the **Object property** panel.
+EZCAD3 adds a Slicing tangent object to the Object list. Select it to review its properties and layer count.
 
-<img src="./images/08_slicing_tangent_object_properties.png" width="410" alt="EZCAD3 Object list with a Slicing tangent object and its Object property panel showing dimensions of 28.4227 mm by 28.4227 mm, approximately 0.5 mm Z height, and 256 display layers.">
+<img src="./images/08_slicing_tangent_object_properties.png" width="410" alt="EZCAD3 Object list showing a Slicing tangent object; Object property panel shows approximately 28.42 mm square dimensions, 0.5 mm height, and 256 layers.">
 
-*Figure 8. The resulting Slicing tangent object and its properties.*
+*Figure 8. Generated Slicing tangent object and its properties.*
 
-Check the dimensions and layer count rather than assuming they will exactly match the original image canvas. In my example, a **31.75 mm** imported bitmap yields an approximately **28.4227 mm square** sliced object because the artwork occupies a smaller area within the surrounding light rim. The exact result depends on the artwork and the generated geometry.
+Check the resulting object's dimensions. My example is imported with a 31.75 mm square canvas but creates an approximately 28.4227 mm square sliced object because the artwork occupies less than the full image canvas. The resulting sliced bounds can differ from the configured import size.
 
 ### 11. Account for hatch settings and optional cleaning
 
-The **main Hatch button**, above **Dynamic hatch**, opens the hatch settings for the sliced object. **Those settings apply to every layer.** If you enable cross-hatching or increase the hatch count, those operations run on *each* layer. Account for the entire hatch configuration when calibrating how much material is removed per layer.
+The main Hatch button above Dynamic hatch configures the hatch applied to every layer. Cross-hatching, hatch counts greater than one, and other hatch settings all affect material removal per layer. Account for the complete operation when selecting slice thickness.
 
-The optional **Clear** section can run a separate operation at a specified layer interval. I use it, when needed, for a periodic **cleaning pass**:
+The optional Clear section lets me apply a separate operation at regular intervals, which I sometimes use for cleaning. For example, Inc. count = 20 runs that operation every 20 layers. I use Original contour for Edge type, although I have not evaluated the other choices.
 
-- Enable **Clear** and configure its separate pen/hatch settings with the Hatch button in that section.
-- Set **Inc. count** to the interval. For example, **20** runs the Clear operation every 20 layers.
-- In my workflow, I use **Original contour** as **Edge type**. I have not tested the differences among the available edge-type choices.
-- **Click Apply** at the top of the Object property panel after changing Clear settings. EZCAD3 can lose unapplied changes when other settings are modified.
+<img src="./images/09_periodic_clear_configuration.png" width="410" alt="EZCAD3 Object property panel with Clear enabled, Original contour selected, Inc. count set to 20, and the separate Clear hatch control visible.">
 
-<img src="./images/09_periodic_clear_configuration.png" width="410" alt="EZCAD3 Object property panel with Clear enabled, Edge type set to Original contour, Inc. count set to 20, and a separate Hatch button for the Clear operation.">
+*Figure 9. Optional cleaning operation every 20 layers.*
 
-*Figure 9. Optional Clear settings for a cleaning operation every 20 layers.*
+Click Apply after changing Clear settings. EZCAD3 can lose changes that have not been applied before other settings are modified. Any cleaning operation may also remove material, so include its effect when calibrating the process.
 
-Configuring pen and hatch parameters is outside this guide. The important point is that **both the main hatch and any periodic Clear operation can affect the actual engraving depth**.
-
-**The depthmap has now been converted and sliced.** The object can be handled using your normal EZCAD3 3D engraving setup and calibration process.
+The depthmap has now been converted and sliced. Continue with your normal 3D engraving setup.
 
 ---
 
 ## Technical Appendix (Optional Reading)
 
-**This appendix is explanatory, not procedural. You can skip it entirely and still complete both parts of the workflow.** It records the reasoning behind my resolution choices, tests of EZCAD3's behavior, and limitations of what those tests establish.
+You do not need this appendix to perform the workflow. It preserves the measurements and reasoning behind the two DPI rules, plus additional information about image sampling and slicing.
 
-### A. Bitmap resolution, hatch spacing, and mesh complexity
+### A. What the controlled DPI tests established
 
-#### Why I start around 635 DPI
+The strongest test used two 1000 × 1000 pixel PNG files with identical pixel data, processed using the same EZCAD3 settings except where stated. The key difference between those two exports was embedded DPI metadata.
 
-My typical hatch line spacing for this type of work is **0.04 mm**:
+| Embedded image DPI | EZCAD3 DPI X/Y | Size X/Y | Vertices | Faces |
+| --- | --- | --- | ---: | ---: |
+| Approximately 72 | 635 / 635 | 40 × 40 mm | 77,845,325 | 155,655,360 |
+| 635 | 635 / 635 | 40 × 40 mm | 1,001,997 | 1,999,992 |
+| 635 | 300 / 300 | 40 × 40 mm | 224,672 | 447,450 |
+| 635 | 635 / 635 | 31.75 × 31.75 mm | 1,001,997 | 1,999,992 |
+
+All tests used Height = 0.5 mm and Invert enabled. The 300 DPI test was repeated and reproduced the same counts.
+
+Three observations follow directly from these tests:
+
+1. Matching the image and EZCAD3 DPI avoids unintended mesh resampling in the tested workflow. Changing only the PNG's embedded resolution from approximately 72 DPI to 635 DPI reduced the face count from 155.7 million to 2 million, with the same pixels and the same import settings.
+2. Changing EZCAD3 DPI relative to the embedded DPI changes mesh complexity. Entering 300 DPI for the 635 DPI bitmap reduced its mesh sampling density.
+3. Changing Size X/Y alone did not change mesh complexity. It changed the model's X/Y bounds from −20 to +20 mm to −15.875 to +15.875 mm, while vertex and face counts remained identical.
+
+These are measured outcomes from my EZCAD3 installation and PNG exports, not a published specification of EZCAD3's internal implementation. Behavior with other software versions and image formats has not been independently verified.
+
+#### Earlier exploratory tests
+
+Before isolating the embedded-DPI effect, I also tested the same artwork exported at two sizes. These results are retained for reference; I did not independently record every file's embedded DPI metadata during that initial series.
+
+| Source image | EZCAD3 DPI X/Y | Model size | Vertices | Faces |
+| --- | ---: | ---: | ---: | ---: |
+| 794 × 794 | 635 / 635 | 31.75 mm square | 632,021 | 1,260,864 |
+| 1110 × 1110 | 888 / 888 | 31.75 mm square | 1,234,317 | 2,464,192 |
+| 794 × 794 | 888 / 888 | 31.75 mm square | 1,236,540 | 2,468,634 |
+| 1110 × 1110 | 635 / 635 | 31.75 mm square | 632,021 | 1,260,864 |
+
+Those results are consistent with the DPI-ratio behavior demonstrated more directly in the later tests.
+
+### B. An inferred model for mesh complexity
+
+Our measurements suggest that EZCAD3 uses the ratio between its entered DPI and the bitmap's embedded DPI to determine approximately how many samples to use along each axis:
 
 ```text
-1 / 0.04 mm = 25 hatch lines per mm
-25 × 25.4 = 635 hatch lines per inch
+Mesh samples per axis ≈ Source pixels per axis × (EZCAD3 DPI / Embedded image DPI)
 ```
 
-That gives me a convenient starting point of **635 DPI** for preparing a bitmap and generating a mesh. At **31.75 mm (1.25 inches)**, this corresponds to approximately **794 pixels per axis**.
+When the two DPI values match, this reduces to approximately one mesh sample per source pixel. When they differ, EZCAD3 appears to resample the image. We have not verified its interpolation method or exact rounding rules.
 
-However, **hatch spacing and bitmap resolution are not the same thing**. Hatch spacing describes the distance between adjacent engraving lines. A bitmap samples an image in two dimensions. Additional image resolution might help preserve contour placement or features between hatch lines, but may also create unnecessary processing. I have not established an optimal DPI for every design.
-
-I have estimated the laser spot size with my 110 mm lens at roughly **0.038 mm**, but I do **not** have reliable documentation or measurements confirming that figure. It should not be treated as the laser's verified resolution.
-
-#### Four controlled EZCAD3 tests
-
-To explore how **Bitmap to curved surface** generates geometry, I used the same image at two export sizes. Each test used **31.75 × 31.75 mm** model size, **0.5 mm** height, and **Invert** enabled.
-
-| Test | Source bitmap | EZCAD3 DPI X/Y | Vertices | Faces |
-| --- | --- | ---: | ---: | ---: |
-| A | 794 × 794 | 635 | 632,021 | 1,260,864 |
-| B | 1110 × 1110 | 888 | 1,234,317 | 2,464,192 |
-| C | 794 × 794 | 888 | 1,236,540 | 2,468,634 |
-| D | 1110 × 1110 | 635 | 632,021 | 1,260,864 |
-
-The reported model bounds did not change across these tests:
-
-- X: **-15.875 to 15.875 mm**
-- Y: **-15.875 to 15.875 mm**
-- Z: **0 to 0.5 mm**
-
-**What the tests establish:**
-
-- The **same DPI** produced the same or almost the same number of mesh vertices and faces, even when the source bitmap dimensions differed substantially.
-- Increasing the EZCAD3 DPI from **635** to **888**, while keeping the physical dimensions fixed, **nearly doubled** the face count. This even happened when the bitmap itself was unchanged (Tests A and C).
-- Thus, **EZCAD3's entered DPI and model size strongly affect generated mesh complexity**. The source bitmap's dimensions alone do not determine the final polygon count.
-
-The results are consistent with EZCAD3 sampling or resampling the image to create a mesh at its target DPI and physical size. We have **not** established which interpolation algorithm it uses, or whether matching the bitmap dimensions and DPI actually improves performance or engraving quality. My preference to resize in an image editor is about retaining control over the resampling method.
-
-#### An interesting pattern in the mesh counts
-
-For these square-image tests, the reported counts fit:
+For the square images tested, every reported mesh count matched this observed geometry pattern for some integer sample count N:
 
 ```text
 Vertices = (N + 1)^2 - 4
 Faces    = 2 × N^2 - 8
 ```
 
-Here, **N** appears to be an internal sample count across one axis, not necessarily the source image's pixel width. For example:
-
-- At **635 DPI**, the counts fit **N = 794**.
-- With an **1110 × 1110** image at **888 DPI**, they fit **N = 1110**.
-- With a **794 × 794** image at **888 DPI**, they fit **N = 1111**.
-
-That one-sample difference suggests some rounding or resampling detail we have not isolated. These formulas **describe the observed tests**; they are not a verified specification of EZCAD3's internal geometry algorithm.
-
-### B. DPI in EZCAD3 versus bitmap dimensions
-
-For a planned engraving size, use the following relationship as a guide when choosing the export dimensions:
+For example, a matched-DPI 1000 × 1000 image produced:
 
 ```text
-Target pixels = physical size in mm / 25.4 × DPI
+Vertices = (1000 + 1)^2 - 4 = 1,001,997
+Faces    = 2 × 1000^2 - 8   = 1,999,992
 ```
 
-DPI and **Size X/Y** are entered separately in EZCAD3. Based on my tests, both participate in determining the generated surface's sampling density and physical extent. The bitmap's stored DPI metadata is not a substitute for verifying its actual pixel dimensions and entering the intended values in the dialog.
+The 72-to-635 DPI mismatch produced counts corresponding exactly to N = 8822, while the 635-to-300 DPI test corresponded exactly to N = 473. The simple DPI-ratio calculation predicts values close to, but not always equal to, those sample counts. Thus, these relationships are empirical approximations, not a documented EZCAD3 algorithm.
 
-I prefer to export a bitmap near the target size because the image editor provides explicit resampling choices. This is a **workflow preference**, not proof that EZCAD3 will fail with larger images or that additional pixels are never useful.
+This also means increasing the source bitmap from 1000 to 2000 pixels per axis, with DPI matched in both cases, should produce roughly four times as many mesh faces. More geometry is not automatically more engraving detail.
 
-### C. Grayscale levels, slice count, and actual engraving depth
+### C. Pixel dimensions, physical size, and hatch spacing
 
-**Normally, measured material removal drives slice thickness.** As with STL engraving, I use the known removal rate for my pen and hatch configuration to select an appropriate slicing thickness. That rate should reflect the *complete operation on each layer*, including cross-hatching, hatch count, and any periodic Clear operations. Slice thickness specifies how EZCAD3 divides the model; it does **not** make the laser remove that amount of material.
-
-A grayscale depthmap adds a separate consideration: **how many distinct elevations the source image can represent**. An **8-bit grayscale** image has 256 possible intensity values (0 through 255). If the artwork actually uses most or all of those values, the chosen slice count may affect how much of that vertical detail survives the slicing process.
-
-- **Underslicing (fewer than 256 layers):** Multiple grayscale elevations may be represented by the same or similar engraving layers. Fine changes in relief height can be lost, making transitions less smooth.
-- **Overslicing (more than 256 layers):** Additional layers cannot create new grayscale values in the source image. They may repeat or closely resemble adjacent slice contours, particularly in reliefs with discrete, terrace-like elevations, adding engraving time without a corresponding increase in useful detail.
-
-**Neither result is guaranteed.** EZCAD3 creates a 3D surface from the image, and interpolation between grayscale samples can produce intermediate heights. As a result, more than 256 slices can still have distinct contours, even from an 8-bit source. Likewise, some artwork uses far fewer than 256 grayscale levels. **256 is a useful reference point, not an EZCAD3 limit or a required layer count.**
-
-For perspective, dividing a **0.5 mm** model into 256 slices gives:
+When DPI is matched, image pixel dimensions govern mesh complexity, while Size X/Y governs physical dimensions. The physical distance represented by one image sample is therefore approximately:
 
 ```text
-0.5 mm / 256 slices = 0.001953125 mm per slice
+XY sample spacing (mm) ≈ Model size along axis (mm) / Pixels along that axis
 ```
 
-That is about **1.95 micrometers per slice**. Strictly speaking, the 256 values in an 8-bit depthmap define 255 intervals between the darkest and brightest endpoints. The calculation above describes the slice spacing for 256 slices, not a proven one-to-one mapping between grayscale values and EZCAD3 layers.
+For example, a 1000-pixel image spread across 40 mm represents approximately 0.04 mm per sample. A 794-pixel image spread across 31.75 mm gives nearly the same spatial interval.
 
-There are also limits to what I have verified:
+I commonly use a 0.04 mm hatch spacing. That motivated my initial choice of approximately 25 image samples per millimeter, or 635 samples per inch. But hatch spacing does not set the DPI required in the bitmap or EZCAD3. The actual XY sample spacing comes from the source image's pixel dimensions and the physical Size X/Y entered in EZCAD3, assuming matched DPI.
 
-- I have **not confirmed** whether EZCAD3 supports greater than 8-bit precision when converting depthmaps.
-- I have **not established** how EZCAD3 interpolates between source pixels during surface generation.
-- Creating 256 slices does **not** guarantee 256 distinct engraved depths in the finished material.
+An estimated laser spot size near 0.038 mm for my 110 mm lens also influenced my earlier thinking, but I have not confirmed that figure through reliable documentation or measurement. Neither the hatch spacing nor this estimated spot size establishes an optimal bitmap pixel count. Finer source sampling may help some contours, but it also produces more geometry.
 
-The practical approach remains to **let calibrated material removal guide slicing**, while recognizing that a depthmap's tonal precision may justify evaluating whether the resulting layer count adequately represents the desired relief.
+### D. Grayscale values, slice count, and material removal
 
-### D. What Min Z, Max Z, and Thickness control
+Use calibrated material removal to guide slice thickness. The amount removed by a complete layer depends on the material, pen settings, hatch count, cross-hatching, and any periodic cleaning operations. Slice thickness does not make the laser remove that amount of material.
 
-**Min Z** and **Max Z** select the vertical range that EZCAD3 will slice. The **← Z** buttons fill these fields from the model's actual lower and upper bounds.
+An 8-bit grayscale depthmap has 256 possible intensity values, from 0 to 255. If the artwork uses most or all of that range, the number of slices may affect how faithfully its intended vertical transitions are represented:
 
-For a full-height model, an approximate layer-count relationship is:
+- Fewer slices can combine nearby elevations and lose subtle height differences.
+- More slices can produce redundant or nearly identical contours, especially with stepped or terraced artwork, without adding new source grayscale values.
+
+This is not a strict 256-layer limit. EZCAD3 may interpolate between source values as it builds a surface, and more than 256 slices can yield distinct contours. Conversely, many depthmaps use far fewer than 256 meaningful grayscale levels.
+
+For reference, a 0.5 mm model divided into 256 slices has approximately 0.001953 mm (1.95 µm) slice thickness. The 256 grayscale values span 255 intervals between the endpoints; this calculation is not proof that EZCAD3 maps each grayscale value to a single slicing layer.
+
+I have not established whether EZCAD3 can use greater than 8-bit depthmap precision, how it interpolates between samples, or how many distinct engraved elevations can be achieved in the finished material.
+
+### E. Z range and layer count
+
+Min Z and Max Z define the portion of the 3D model included in slicing. The adjacent ← Z buttons copy the model's detected Z bounds.
+
+The observed layer count is consistent with:
 
 ```text
-Layers = round up [(Max Z - Min Z) / Thickness]
+Layers ≈ round up [(Max Z - Min Z) / Thickness]
 ```
 
-Two verified examples using **0.0026 mm** slice thickness:
+For a model with Z from 0 to 0.5 mm, using 0.0026 mm thickness generated 193 layers. Raising Min Z to 0.25 mm, with the same Max Z and thickness, sliced only the upper half and generated 97 layers. I did not test whether partial-range slicing preserves absolute Z coordinates in subsequent operations.
 
-| Z range | Range height | EZCAD3 layers |
-| --- | ---: | ---: |
-| 0 to 0.5 mm | 0.5 mm | **193** |
-| 0.25 to 0.5 mm | 0.25 mm | **97** |
+### F. Controls not investigated
 
-The second test confirmed that setting **Min Z to 0.25 mm** sliced only the upper half of the 0.5 mm model. I did not investigate whether partial-range slicing preserves the original absolute Z coordinates in subsequent operations.
-
-### E. Controls not investigated in this workflow
-
-I have not characterized the function of **Border** in the bitmap conversion dialog, **Rotate angle** in Stratified section, the **Using selected two-dimensional object hierarchy** checkbox, or the differences among the **Clear Edge type** options (**Edge box**, **Original contour**, and **Convex Hull contour**). They are mentioned only where needed to document the settings I use, rather than to imply a verified understanding of their behavior.
+I have not characterized Border in Bitmap to curved surface, Rotate angle in Stratified section, Using selected two-dimensional object hierarchy, or the differences among the Clear Edge type options (*Edge box*, *Original contour*, and *Convex Hull contour*). These are mentioned only as needed to document the settings I use.
 
 ---
 
-*Documented from hands-on EZCAD3 testing for Angry Thumb Studio. Adjust all dimensions and engraving parameters for your own machine, lens, material, and artwork.*
+*Documented from hands-on EZCAD3 testing for Angry Thumb Studio. Adjust dimensions and engraving parameters for your own equipment, lens, material, and artwork.*
