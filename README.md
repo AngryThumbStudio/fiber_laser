@@ -34,6 +34,7 @@ The repository outlines several core processes:
 1.  **Raster to Vector Conversion:** ComfyUI workflow to upscale, threshold, and trace black-and-white raster art into SVG. See [**Black and White Raster to SVG**](./workflows/raster-to-svg/README.md).
 2.  **Layout and Export:** Using Adobe Illustrator for final layout and preparing files for EZCAD3. To ensure compatibility, all files are exported as Legacy Adobe Illustrator v8 format.
 3.  **Physical Workholding:** Designing and printing 3D printed jigs to ensure repeatable positioning and focal consistency during production runs. See [**Mechanical Files**](./mechanical/README.md) for parametric models and focus calibration hardware.
+4.  **Grayscale Depthmap Engraving:** Preparing an existing grayscale depthmap for EZCAD3, converting it into a 3D surface, and slicing it for engraving. See [**Grayscale Depthmap Engraving in EZCAD3**](./workflows/grayscale_depthmap_engraving/README.md).
 
 ## Reference Settings
 
