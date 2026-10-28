@@ -43,13 +43,30 @@ Two different depth-engraving methods are documented on this page. **Do not carr
 | **Pen settings** | Laser parameters such as speed, frequency, power, and pulse width. |
 | **Hatch settings** | Scan pattern, line spacing, count, and angle or rotation. |
 | **Hatch count** | Number of times the programmed hatch is marked during that operation. It is **not** a count of individual scan lines. |
-| **Repetition** | One cycle of the conventional paired Engrave + Clean operations. |
+| **Object A Count** | Number of times EZCAD3 repeats a conventional hatch set using the **A** field under Object Properties (when Axis Solution is set to **Z only**). |
+| **Repetition** | One complete cycle of the conventional paired Engrave + Clean operations, controlled by **Object A Count**. |
 | **3D slice** | One height level in a sliced depth-map object, processed in sequence with the other slices. |
 | **Programmed Z depth** | The Z progression requested by the sliced model. This is not necessarily equal to the physical depth removed. |
 
 ### Conventional Engrave, Clean and Finish
 
-This workflow repeats a paired **Engrave + Clean** hatch set to build depth. For example, an Engrave count of 20 followed by a Clean count of 1 means 20 complete engrave-hatch passes, then one clean-hatch pass, for each repetition. After the requested repetitions, run the material's blackening or polishing operation **once**.
+This workflow repeats a paired **Engrave + Clean** hatch set to build depth. For example, an Engrave hatch Count of 20 followed by a Clean hatch Count of 1 means 20 complete engrave-hatch passes, then one clean-hatch pass in each repetition.
+
+#### Repeating the Hatch Set with Object Property A
+
+In EZCAD3, set **Axis Solution** to **Z only** (rotary / ZA disabled). Under **Object Properties**, the position fields include **X**, **Y**, **Z**, and **A**. When A is not being used for rotary motion, set its **Count** to the desired number of repetitions of the complete Engrave + Clean hatch set. Do not increase the individual hatch Count fields to achieve these repetitions.
+
+For example, when the Engrave hatch Count is 20, the Clean hatch Count is 1, and **Object A Count is 16**, the result is 16 cycles of 20 engrave passes followed by 1 clean pass: **320 engrave passes and 16 clean passes**.
+
+| Material | Engrave hatch Count | Clean hatch Count | Object A Count | Total engrave / clean passes |
+| :--- | ---: | ---: | ---: | :--- |
+| Copper | 20 | 1 | 16 | 320 / 16 |
+| Brass | 5 | 1 | 16 | 80 / 16 |
+| High carbon steel (conventional) | 20 | 1 | 8–24 | 160–480 / 8–24 |
+
+Perform the final blackening or polishing hatch as a **separate operation with one execution**, outside the repeated hatch set. Otherwise it would also be repeated by Object A Count.
+
+For the same A Count technique applied to cutting, see [Repeating hatch sets with Object Property A](./cutting_high_carbon_steel.md#repeating-hatch-sets-with-object-property-a).
 
 Unless an individual section specifies otherwise, these conventional hatch options apply:
 
@@ -82,9 +99,9 @@ These pen settings are shared by **Copper Clean**, **Brass Clean**, and **High C
 
 ### Procedure
 
-1. Configure the **Copper Engrave** and **Copper Clean** hatches shown below.
-2. Repeat the paired hatches **16 times**, using 20 engraving passes followed by 1 cleaning pass in each repetition.
-3. After depth engraving, run the **Copper Black** blackening hatch **once**.
+1. Configure the **Copper Engrave** hatch with **Count 20** and the **Copper Clean** hatch with **Count 1**.
+2. With **Axis Solution = Z only**, set **Object Properties → A → Count = 16** to repeat the paired hatch set 16 times (320 engraving passes and 16 cleaning passes total).
+3. Run the **Copper Black** hatch **once as a separate blackening operation**, outside the repeated hatch set.
 
 ### Engrave
 
@@ -145,9 +162,9 @@ These pen settings are shared by **Copper Clean**, **Brass Clean**, and **High C
 
 ### Procedure
 
-1. Configure the **Brass Engrave** and **Brass Clean** hatches shown below.
-2. Repeat the paired hatches **16 times**, using 5 engraving passes followed by 1 cleaning pass in each repetition.
-3. After depth engraving, run the **Brass Black** blackening hatch **once**.
+1. Configure the **Brass Engrave** hatch with **Count 5** and the **Brass Clean** hatch with **Count 1**.
+2. With **Axis Solution = Z only**, set **Object Properties → A → Count = 16** to repeat the paired hatch set 16 times (80 engraving passes and 16 cleaning passes total).
+3. Run the **Brass Black** hatch **once as a separate blackening operation**, outside the repeated hatch set.
 
 ### Engrave
 
@@ -283,9 +300,9 @@ This method is independent of the 3D depth-map procedure above.
 
 #### Procedure
 
-1. Configure the **High Carbon Steel Engrave** and **High Carbon Steel Clean** hatches below.
-2. Repeat the paired operation as needed for depth: **20 engraving passes, then 1 cleaning pass** per repetition. The tested range was **8–24 repetitions**.
-3. Run the polish hatch **once**, with its count fixed at **32**, after depth engraving. The polishing hatch is not repeated for every engrave/clean cycle.
+1. Configure the **High Carbon Steel Engrave** hatch with **Count 20** and the **High Carbon Steel Clean** hatch with **Count 1**.
+2. With **Axis Solution = Z only**, set **Object Properties → A → Count** to the required repetition count. The documented tests used **8, 12, 16, 20, or 24**, corresponding to 160–480 engraving passes and 8–24 cleaning passes.
+3. After depth engraving, run the polish hatch **once as a separate operation**, with its hatch **Count fixed at 32**. Do not include polishing in the repeated A Count hatch set.
 
 #### Engrave
 
