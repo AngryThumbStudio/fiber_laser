@@ -4,7 +4,7 @@ These settings were developed on a **JPT M7 MOPA 100W (YDFLP-100-M7-M-R)** with 
 
 For adapting pulse-related parameters to another MOPA source, see the [fiber laser pulse parameter converter](https://acedapig.github.io/fiber-laser-pulse-calc/).
 
-Settings recorded: **June 7, 2026** (copper and brass), **June 15, 2026** (conventional high-carbon-steel engraving), and **October 27, 2026** (high-carbon-steel 3D depth-map engraving), and **October 28, 2026** (cartridge-brass 3D depth-map test).
+Settings recorded: **June 7, 2026** (copper and brass), **June 15, 2026** (conventional high-carbon-steel engraving), **October 27, 2026** (high-carbon-steel 3D depth-map engraving), and **October 28, 2026** (cartridge-brass 3D depth-map test).
 
 ## Contents
 
