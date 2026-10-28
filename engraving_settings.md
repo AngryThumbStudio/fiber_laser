@@ -4,7 +4,7 @@ These settings were developed on a **JPT M7 MOPA 100W (YDFLP-100-M7-M-R)** with 
 
 For adapting pulse-related parameters to another MOPA source, see the [fiber laser pulse parameter converter](https://acedapig.github.io/fiber-laser-pulse-calc/).
 
-Settings recorded: **June 7, 2026** (copper and brass), **June 15, 2026** (conventional high-carbon-steel engraving), and **October 27, 2026** (high-carbon-steel 3D depth-map engraving).
+Settings recorded: **June 7, 2026** (copper and brass), **June 15, 2026** (conventional high-carbon-steel engraving), and **October 27, 2026** (high-carbon-steel 3D depth-map engraving), and **October 28, 2026** (cartridge-brass 3D depth-map test).
 
 ## Contents
 
@@ -13,6 +13,8 @@ Settings recorded: **June 7, 2026** (copper and brass), **June 15, 2026** (conve
 - [Shared Cleaning Pen Settings](#shared-cleaning-pen-settings)
 - [Copper](#copper)
 - [Brass](#brass)
+  - [3D Depth Map: Cartridge Brass](#3d-depth-map-cartridge-brass)
+  - [Conventional Engrave, Clean & Blackening](#conventional-engrave-clean--blackening)
 - [High Carbon Steel](#high-carbon-steel)
   - [3D Depth Map: Clean Relief](#3d-depth-map-clean-relief)
   - [Conventional Engrave, Clean & Polish](#conventional-engrave-clean--polish)
@@ -25,10 +27,11 @@ Settings recorded: **June 7, 2026** (copper and brass), **June 15, 2026** (conve
 | :--- | :--- | :--- |
 | Copper, conventional hatching | 16 sets of 20 engrave passes + 1 clean pass | One blackening hatch |
 | Brass, conventional hatching | 16 sets of 5 engrave passes + 1 clean pass | One blackening hatch |
+| **Cartridge brass, 3D depth map** | **256 complete slices, one hatch per slice; 0.300 mm nominal model Z range** | **No laser cleaning or finishing passes** |
 | High carbon steel, conventional hatching | 8–24 sets of 20 engrave passes + 1 clean pass | One 32-count polish hatch |
 | **High carbon steel, 3D depth map** | **416 complete slices, one hatch per slice** | **No cleaning or finishing passes** |
 
-For the successful steel 3D relief, see the [3D depth-map settings](#3d-depth-map-clean-relief): 1800 mm/s, 67.5% power, 75 kHz, 100 ns, 0.020 mm line spacing, and 68.77° rotation per slice.
+For the successful steel 3D relief, see the [steel 3D depth-map settings](#3d-depth-map-clean-relief): 1800 mm/s, 67.5% power, 75 kHz, 100 ns, 0.020 mm line spacing, and 68.77° rotation per slice. The [cartridge-brass 3D test](#3d-depth-map-cartridge-brass) used the same parameters at **45% power**; it produced **0.430 mm measured depth** against a **0.300 mm nominal model Z range**.
 
 Line density in LPI (lines per inch) is calculated as **25.4 ÷ line spacing (mm)**.
 
@@ -78,7 +81,7 @@ Unless an individual section specifies otherwise, these conventional hatch optio
 
 EZCAD3 processes a grayscale heightmap as a sliced 3D object. Each slice is engraved with a **single bidirectional hatch**, rotating the angle by **68.77° per slice**. EZCAD3 advances the programmed Z position through the slices automatically.
 
-The successful steel relief used **416 complete slices**, with hatch count **1** per slice. This is different from a conventional hatch count of 416 or 416 repetitions of an Engrave + Clean set. There were **no laser cleaning, polishing, or finishing passes**.
+The successful steel relief used **416 complete slices**; the cartridge-brass test used **256 complete slices**. Both used hatch count **1** per slice, not 416 or 256 conventional hatch repetitions. Neither used laser cleaning, polishing, or finishing passes. Actual engraving depth must be measured: the model's nominal Z range does not limit how much material the laser can physically remove.
 
 ---
 
@@ -160,13 +163,75 @@ These pen settings are shared by **Copper Clean**, **Brass Clean**, and **High C
 
 ## Brass
 
-### Procedure
+### 3D Depth Map: Cartridge Brass
+
+*Recorded October 28, 2026. First completed 3D relief test on a 19.2 mm cartridge-brass coin.*
+
+This process uses a short, **100 ns** pulse and reduced power instead of the **500 ns** pulse used for conventional brass engraving below. It produced fine sculptural detail with no prominent raised reflow ridges visible in the test photograph. **The measured engraving depth exceeded the nominal imported model height**, so these settings are a successful visual test, **not** a calibrated recipe for a 0.300 mm physical cut.
+
+#### Procedure
+
+1. Prepare a grayscale relief depth map for a **19.05 mm target engraving diameter** on a **19.20 mm diameter** cartridge-brass coin.
+2. Import it into EZCAD3 as a **3D sliced tangent** object with a **0.300 mm nominal model Z range**, generating **256 complete slices**.
+3. Apply the pen and hatch settings below. Use **one bidirectional hatch per slice**, with **68.77° auto-rotation** between slices. EZCAD3 handles the Z progression automatically.
+4. Engrave all **256 slices**. Use **no laser cleaning, polishing, or finishing passes**.
+5. The test coin was washed and brushed with a nylon brush afterward. A satisfactory final cleaning method has **not yet been established**.
+
+#### Pen Settings
+
+| Parameter | Value |
+| :--- | :--- |
+| Mark speed | 1800 mm/s |
+| Frequency | 75 kHz |
+| Power | 45% |
+| Pulse width | 100 ns |
+
+#### Hatch Settings
+
+| Parameter | Value |
+| :--- | :--- |
+| Pattern | Bidirectional |
+| Count | 1 per slice |
+| Line spacing | 0.020 mm (1270 LPI) |
+| Auto-rotate hatch angle | 68.77° per slice |
+| Cross hatch | Disabled |
+
+#### Slicing and Measured Result
+
+| Parameter | Value |
+| :--- | :--- |
+| Material | Cartridge brass |
+| Coin diameter | 19.20 mm |
+| Target X/Y engraving diameter | 19.05 mm |
+| EZCAD3 nominal model Z range | 0.300 mm |
+| Complete slices | 256 |
+| Laser cleaning or finishing passes | None |
+| Reference measurement | 8.66 mm |
+| Engraved measurement | 8.23 mm |
+| **Measured depth removed** | **0.430 mm** |
+| **Excess over nominal model depth** | **0.130 mm (43.3%)** |
+| Average measured depth per slice | 0.00168 mm (1.68 µm) |
+
+The per-slice average is the **final measured depth divided by 256**, not a verified constant removal rate. EZCAD3 automatically changes Z through the sequence; the model's Z range is **not a physical depth stop**. The test does not establish linear removal or imply that lowering power will reduce depth proportionally.
+
+#### Observations and Next Test
+
+- Fine detail in the hat, face, beard, and fur remained distinct at coin scale.
+- Background hatch lines were barely visible to the naked eye, and no prominent reflow ridges were apparent in the photograph.
+- Dark material remained in some recesses after washing and nylon brushing; its composition and optimal cleaning method were not established.
+- **Untested next adjustment:** try **40% power**, keeping all other parameters and the 256-slice model unchanged, to investigate reducing the overshoot toward a 0.300 mm physical depth. Measure the result before treating it as a calibrated setting.
+
+### Conventional Engrave, Clean & Blackening
+
+*Recorded June 7, 2026. Existing 500 ns conventional hatch process, retained separately from the 3D relief test.*
+
+#### Procedure
 
 1. Configure the **Brass Engrave** hatch with **Count 5** and the **Brass Clean** hatch with **Count 1**.
 2. With **Axis Solution = Z only**, set **Object Properties → A → Count = 16** to repeat the paired hatch set 16 times (80 engraving passes and 16 cleaning passes total).
 3. Run the **Brass Black** hatch **once as a separate blackening operation**, outside the repeated hatch set.
 
-### Engrave
+#### Engrave
 
 **Pen settings**
 
@@ -186,7 +251,7 @@ These pen settings are shared by **Copper Clean**, **Brass Clean**, and **High C
 | Line spacing | 0.04 mm (635 LPI) |
 | Auto-rotate hatch angle | 68.75° |
 
-### Clean
+#### Clean
 
 **Pen settings:** Use the [shared cleaning pen settings](#shared-cleaning-pen-settings).
 
@@ -199,7 +264,7 @@ These pen settings are shared by **Copper Clean**, **Brass Clean**, and **High C
 | Line spacing | 0.05 mm (508 LPI) |
 | Angle | 0° |
 
-### Finish: Blackening
+#### Finish: Blackening
 
 **Pen settings**
 
