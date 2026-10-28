@@ -1,75 +1,69 @@
 # Known Engraving Settings (Copper, Brass & High Carbon Steel)
 
-> **Important:** These settings were developed on a **JPT M7 MOPA 100W (YDFLP-100-M7-M-R)** laser source with an **F160Q / 110 mm** fused quartz lens, using **BJJCZ EZCAD3**. They are shared as a reference for what works on this specific machine, not as universal recommendations.
+> These settings were developed using a **JPT M7 MOPA 100W (YDFLP-100-M7-M-R)** laser source, an **F160Q / 110 mm** fused-quartz lens, and **BJJCZ EZCAD3**. They document observed results on this machine, not universal settings. Material, focus, optics, and laser configuration can change the outcome.
 >
-> There is **no guarantee** these values will produce the same results on other hardware, optics, or controllers. More efficient combinations may exist for engraving depth, surface finish, or laser blackening/oxidation. These are the settings that work here and, when the engrave + clean hatch set is repeated as noted below, achieve **upward of 0.7 mm** of depth.
->
-> To adapt pulse-related parameters for a different MOPA source, see the [fiber laser pulse parameter converter](https://acedapig.github.io/fiber-laser-pulse-calc/).
+> For adapting pulse-related parameters to another MOPA source, see the [fiber laser pulse parameter converter](https://acedapig.github.io/fiber-laser-pulse-calc/).
 
-Settings captured: **2026-06-07** (copper & brass), **2026-06-15** (high carbon steel)
+Settings recorded: June 7, 2026 (copper and brass); June 15, 2026 (high-carbon-steel engrave/clean/polish); October 27, 2026 (high-carbon-steel 3D depth map).
 
 ## Contents
 
-* [At a Glance](#at-a-glance)
-* [Workflow](#workflow)
-* [Shared Pen Settings](#shared-pen-settings)
-* [Copper](#copper)
-* [Brass](#brass)
-* [High Carbon Steel](#high-carbon-steel)
+- [Quick Reference](#quick-reference)
+- [Workflow Types](#workflow-types)
+- [Shared Cleaning Pen Settings](#shared-cleaning-pen-settings)
+- [Copper](#copper)
+- [Brass](#brass)
+- [High Carbon Steel](#high-carbon-steel)
+  - [3D Depth Map: Clean Relief](#3d-depth-map-clean-relief)
+  - [2D Engrave, Clean & Polish](#2d-engrave-clean--polish)
 
 ---
 
-## At a Glance
+## Quick Reference
 
-| | Copper | Brass | High Carbon Steel |
-| :--- | :--- | :--- | :--- |
-| **Hatch set repetitions** | 16 | 16 | 8–24 (see [removal table](#material-removal)) |
-| **Engrave → Clean count** | 20 → 1 | 5 → 1 | 20 → 1 |
-| **Engrave speed** | 2400 mm/s | 1500 mm/s | 2400 mm/s |
-| **Engrave frequency** | 96 kHz | 67 kHz | 96 kHz |
-| **Engrave power** | 45% | 30% | 45% |
-| **Engrave pulse width** | 100 ns | 500 ns | 200 ns |
-| **Engrave line space** | 0.04 mm (635 LPI) | 0.04 mm (635 LPI) | 0.04 mm (635 LPI) |
-| **Clean line space** | 0.025 mm (1016 LPI) | 0.05 mm (508 LPI) | 0.05 mm (508 LPI) |
-| **Finish pass** | Black (×1) | Black (×1) | Polish (32 count) |
-| **Finish speed** | 250 mm/s | 80 mm/s | 3500 mm/s |
-| **Finish frequency** | 75 kHz | 50 kHz | 3500 kHz |
-| **Finish power** | 40% | 27% | 70% |
-| **Finish pulse width** | 200 ns | 200 ns | 2 ns |
-| **Finish line space** | 0.005 mm (5080 LPI) | 0.01 mm (2540 LPI) | 0.025 mm (1016 LPI) |
+| Material / method | Depth process | Finishing process |
+| :--- | :--- | :--- |
+| Copper, conventional hatch | 16 sets of 20 engrave passes + 1 clean pass | Blackening hatch |
+| Brass, conventional hatch | 16 sets of 5 engrave passes + 1 clean pass | Blackening hatch |
+| High carbon steel, conventional hatch | 8–24 sets of 20 engrave passes + 1 clean pass | 32-pass polish hatch |
+| **High carbon steel, 3D depth map** | **416 complete EZCAD3 slices, one bidirectional hatch per slice** | **No laser cleaning or finishing passes** |
+
+For the clean steel 3D relief, the primary settings are **1800 mm/s, 67.5% power, 75 kHz, 100 ns, 0.020 mm hatch spacing, and 68.77° rotation per slice**. See [the full 3D setup](#3d-depth-map-clean-relief).
 
 LPI (lines per inch) is calculated as `25.4 ÷ line spacing (mm)`.
 
+## Workflow Types
+
+The conventional hatch workflow and the 3D depth-map workflow are separate processes. Do not carry cleaning/finishing passes or hatch counts from one into the other.
+
+### Conventional engrave, clean & finish
+
+Copper, brass, and the earlier high-carbon-steel process use paired **Engrave + Clean** hatches. Repeat the pair to build depth, then run the material-specific blackening or polishing hatch once. A hatch `Count` of 20 means 20 marking passes through that hatch, not 20 individual scan lines.
+
+Common hatch options for those conventional layers, unless specified otherwise:
+
+- `Enable` and `All calc`: enabled.
+- `Mark Contour`, `Contour prior`, `Follow edge once`, `Cross hatch`, and `Average distribute line`: disabled.
+- Primary engrave hatches use 68.75° auto-rotation. A bidirectional hatch at 0° is geometrically equivalent to 180°; 68.75° yields 144 distinct directions before repeating. Cleaning hatches use a fixed 0° unless otherwise noted.
+
+### EZCAD3 sliced 3D depth map
+
+For the clean high-carbon-steel relief, EZCAD3 generates a complete stack of slices from the grayscale heightmap. Each slice uses **one bidirectional hatch**, with the hatch angle advanced by **68.77° per slice**. EZCAD3 automatically advances the programmed Z position through the sliced model.
+
+The 416 slices are **not** a hatch `Count` of 416, nor are they 416 repetitions of an engrave/clean pair. All 416 slices are engraved. There are no separate laser cleaning or finishing passes.
+
 ---
 
-## Workflow
+## Shared Cleaning Pen Settings
 
-Each material uses three pen setting groups. Copper and brass use **Engrave**, **Clean**, and **Black** (blackening/oxidation). High carbon steel uses **Engrave**, **Clean**, and **Polish**. Pen parameters are listed from saved EZCAD3 pen settings.
-
-1. **Depth:** Repeat the **Engrave + Clean** hatch set (see each material section). Each repetition runs the engrave hatch first, then the clean hatch. Copper and brass use **16** repetitions; high carbon steel repetition counts are listed in [Material Removal](#material-removal).
-2. **Finish:** Run the black pen + hatch once after depth passes are complete (copper & brass), or run the polish pen + hatch once with a fixed **32** hatch count (high carbon steel).
-
-**Engrave** and **Clean** hatches are always paired as a two-layer set. The engrave and clean **Count** values define how many hatch lines run per layer within each repetition (for example, copper runs 20 engrave lines, then 1 clean line, before the next repetition).
-
-Common hatch defaults used across these layers unless noted otherwise:
-
-* **Enable** and **All calc:** checked
-* **Mark Contour**, **Contour prior**, **Follow edge once**, **Cross hatch**, **Average distribute line:** unchecked
-
-**Auto rotate hatch angle (68.75°):** Both engrave hatches use this rotation step. For bidirectional hatching, **0° and 180° produce the same fill**, so only half of a full rotation (0° to 180°) counts as a unique angle. Stepping by 68.75° gives **144 passes** before the angle repeats (`144 × 68.75° = 9900°`, which is **180° mod 360°**, equivalent to 0°). That avoids repeating hatch angles too soon during long engrave runs.
-
----
-
-## Shared Pen Settings
-
-**Copper Clean**, **Brass Clean**, and **High Carbon Steel Clean** use the same pen values:
+These values apply to the conventional **Copper Clean**, **Brass Clean**, and **High Carbon Steel Clean** hatches. They are not used in the clean 3D depth-map process.
 
 | Parameter | Value |
 | :--- | :--- |
-| **Mark speed** | 4000 mm/s |
-| **Frequency** | 125 kHz |
-| **Power** | 15% |
-| **Pulse width** | 80 ns |
+| Mark speed | 4000 mm/s |
+| Frequency | 125 kHz |
+| Power | 15% |
+| Pulse width | 80 ns |
 
 ---
 
@@ -105,7 +99,7 @@ Common hatch defaults used across these layers unless noted otherwise:
 
 #### Copper Clean
 
-Uses the [shared clean pen settings](#shared-pen-settings).
+Uses the [shared cleaning pen settings](#shared-cleaning-pen-settings).
 
 **Hatch**
 
@@ -172,7 +166,7 @@ Uses the [shared clean pen settings](#shared-pen-settings).
 
 #### Brass Clean
 
-Uses the [shared clean pen settings](#shared-pen-settings).
+Uses the [shared cleaning pen settings](#shared-cleaning-pen-settings).
 
 **Hatch**
 
@@ -207,91 +201,143 @@ Uses the [shared clean pen settings](#shared-pen-settings).
 
 ---
 
+---
+
 ## High Carbon Steel
 
-These settings are typically used on **4 mm+** thick **1095** and **80CrV2** stock. The notes below reflect this machine and material only.
+The conventional settings below were used on 4 mm+ **1095** and **80CrV2** stock. The newer 3D settings were developed for a full sculptural relief on high-carbon-steel bar stock. Results may vary between bars, even at identical laser settings.
 
-For through-cutting 3.0–4.5 mm high carbon steel on this machine, see [Cutting High Carbon Steel](./cutting_high_carbon_steel.md).
+For through-cutting 3.0–4.5 mm high-carbon steel, see [Cutting High Carbon Steel](./cutting_high_carbon_steel.md).
 
-### Phase 1: Depth (Engrave + Clean Hatch Set)
+### 3D Depth Map: Clean Relief
+
+*Recorded October 27, 2026. Visually successful full mountain-man bas-relief.*
+
+This process was selected to preserve convex contours, fine feather and beard detail, and a comparatively clean recessed field while minimizing the raised-edge reflow seen with longer pulses. The final full engraving was not depth-measured, to avoid marking its finished recessed background.
+
+#### Pen and hatch settings
+
+| Parameter | Setting |
+| :--- | :--- |
+| EZCAD3 object | 3D sliced tangent (grayscale depth map) |
+| Mark speed | **1800 mm/s** |
+| Power | **67.5%** |
+| Frequency | **75 kHz** |
+| Pulse width | **100 ns** |
+| Pattern | Bidirectional, single hatch |
+| Hatch count | 1 per slice |
+| Line spacing | **0.020 mm (1270 LPI)** |
+| Auto-rotate hatch angle | **68.77° per slice** |
+| Complete slices | **416** |
+| Target model Z range | 0.500 mm |
+| Cross hatch | Off |
+| Cleaning passes | None |
+| Finishing/polishing passes | None |
+
+Run the **complete 416-slice stack**, not only the first 416 slices of a larger stack. EZCAD3 advances the programmed Z position per slice automatically. The programmed model depth and slice count do not guarantee the same physical material removal on every steel bar.
+
+#### Why 75 kHz?
+
+The 75 kHz setting is **intentional**: at 100 ns it operates in the JPT M7's reduced-average-power (down-power) range, below the nominal full-power cutoff frequency. It is not a mistaken frequency entry.
+
+In controlled tests on a *different* steel bar, using the same 8.892 mm relief crop, 256 complete slices, 100 ns, 67.5% power, 1800 mm/s, 0.020 mm spacing, and 68.77° rotation, frequency affected both depth and surface appearance:
+
+| Frequency | Measured removal, 256 slices |
+| :--- | ---: |
+| 75 kHz | 0.270 mm |
+| 100 kHz | 0.360 mm |
+| 120 kHz | 0.420 mm |
+| 160 kHz | 0.710 mm |
+
+Higher frequency increased removal, but the 160 kHz sample was visibly much rougher. The 75 kHz test was preferred for clarity and detail, so depth was developed by increasing the number of complete slices instead of forcing frequency upward. These measurements are from the test bar and should **not** be taken as calibrated depths for the finished full portrait on the other bar.
+
+#### Result and scope
+
+The full-portrait result retained fine braids, feather, facial features, beard, and fur, with a clean convex claw profile and no separate laser clean or polish operation. The actual finished depth was **not measured**. Record new material batches and geometry separately rather than treating 416 slices as a universal 0.5 mm recipe.
+
+### 2D Engrave, Clean & Polish
+
+*Recorded June 15, 2026. Conventional repeated hatch workflow, retained for reference.*
+
+This is a different process from the 3D depth-map settings above.
+
+#### Phase 1: Depth (Engrave + Clean Hatch Set)
 
 | Parameter | Value |
 | :--- | :--- |
-| **Engrave hatch** | High Carbon Steel Engrave, count 20 per repetition |
-| **Clean hatch** | High Carbon Steel Clean, count 1 per repetition |
+| Engrave hatch | High Carbon Steel Engrave, count 20 per repetition |
+| Clean hatch | High Carbon Steel Clean, count 1 per repetition |
 
-Repeat the engrave + clean hatch set for the desired depth (see [Material Removal](#material-removal)), then run [Phase 2: Polish](#phase-2-polish) once.
+Repeat the paired engrave + clean hatch set for the desired depth (see [Material Removal](#material-removal)), then run [Phase 2: Polish](#phase-2-polish) once.
 
-#### High Carbon Steel Engrave
+##### High Carbon Steel Engrave
 
 **Pen**
 
 | Parameter | Value |
 | :--- | :--- |
-| **Mark speed** | 2400 mm/s |
-| **Frequency** | 96 kHz |
-| **Power** | 45% |
-| **Pulse width** | 200 ns |
+| Mark speed | 2400 mm/s |
+| Frequency | 96 kHz |
+| Power | 45% |
+| Pulse width | 200 ns |
 
 **Hatch**
 
 | Parameter | Value |
 | :--- | :--- |
-| **Pattern** | Bidirectional |
-| **Count** | 20 |
-| **Line space** | 0.04 mm (635 LPI) |
-| **Auto rotate hatch angle** | 68.75° |
+| Pattern | Bidirectional |
+| Count | 20 |
+| Line space | 0.04 mm (635 LPI) |
+| Auto rotate hatch angle | 68.75° |
 
-#### High Carbon Steel Clean
+##### High Carbon Steel Clean
 
-Uses the [shared clean pen settings](#shared-pen-settings).
+Uses the [shared cleaning pen settings](#shared-cleaning-pen-settings).
 
 **Hatch**
 
 | Parameter | Value |
 | :--- | :--- |
-| **Pattern** | Bidirectional |
-| **Count** | 1 |
-| **Line space** | 0.05 mm (508 LPI) |
-| **Angle** | 0° |
+| Pattern | Bidirectional |
+| Count | 1 |
+| Line space | 0.05 mm (508 LPI) |
+| Angle | 0° |
 
-### Material Removal
+#### Material Removal
 
-All values are **total material removed** relative to untreated stock (no laser passes). Each test ran the full workflow: repeat the **Engrave + Clean** hatch set (engrave and clean passes together) for the count shown, then run **32** polish passes once. Polish settings were fixed; polish hatch count was always **32** and was not repeated as a layer.
+All values below are total material removed relative to untreated stock. Each test repeated the paired Engrave + Clean hatches for the count shown and then used 32 polish passes once. These results apply to the conventional workflow, **not** the 3D sliced depth-map workflow.
 
 | Engrave + Clean repetitions | Material removed (mm) |
-| :--- | :--- |
+| :--- | ---: |
 | 8 | 0.22 |
 | 12 | 0.31 |
 | 16 | 0.37 |
 | 20 | 0.39 |
 | 24 | 0.47 |
 
-### Phase 2: Polish
+#### Phase 2: Polish
 
-The polish pass smooths pitting in the bottom of the engrave and leaves a bluish annealing color on the marked surface.
+The conventional polish hatch smooths pitting in the bottom of the engrave and leaves a bluish annealing color on the marked surface. Defocus this polish layer by **2 mm**.
 
-Defocus the polish layer by **2 mm**.
+On thinner stock (1.8 mm or 1/16"), annealing color can appear on the *opposite* side at 32 polish passes, but not at 16. That has not been observed on the thicker 4 mm+ stock used for these settings.
 
-On thinner stock (**1.8 mm** or **1/16"**), annealing color can appear on the **opposite** side of the piece at **32** polish passes, but not at **16**. That behavior has not been observed on the thicker 4 mm+ stock these settings were developed on.
-
-#### High Carbon Steel Polish
+##### High Carbon Steel Polish
 
 **Pen**
 
 | Parameter | Value |
 | :--- | :--- |
-| **Mark speed** | 3500 mm/s |
-| **Frequency** | 3500 kHz |
-| **Power** | 70% |
-| **Pulse width** | 2 ns |
+| Mark speed | 3500 mm/s |
+| Frequency | 3500 kHz |
+| Power | 70% |
+| Pulse width | 2 ns |
 
 **Hatch**
 
 | Parameter | Value |
 | :--- | :--- |
-| **Pattern** | Bidirectional |
-| **Count** | 32 |
-| **Line space** | 0.025 mm (1016 LPI) |
-| **Angle** | 30° |
-| **Auto rotate hatch angle** | 68.75° |
+| Pattern | Bidirectional |
+| Count | 32 |
+| Line space | 0.025 mm (1016 LPI) |
+| Angle | 30° |
+| Auto rotate hatch angle | 68.75° |
